@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="clock_icon.png" />
+    <None Remove="default_song_icon.png" />
+    <None Remove="img\clock_icon.png" />
+    <None Remove="img\default_song_icon.png" />
+    <None Remove="img\next_icon.png" />
+    <None Remove="img\not_found_icon.png" />
+    <None Remove="img\pause_icon.png" />
+    <None Remove="img\play_icon.png" />
+    <None Remove="img\prev_icon.png" />
+    <None Remove="img\search_icon.png" />
+    <None Remove="next_icon.png" />
+    <None Remove="play_icon.png" />
+    <None Remove="prev_icon.png" />
+    <None Remove="search_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="img\clock_icon.png" />
+    <Resource Include="img\default_song_icon.png" />
+    <Resource Include="img\next_icon.png" />
+    <Resource Include="img\not_found_icon.png" />
+    <Resource Include="img\pause_icon.png" />
+    <Resource Include="img\play_icon.png" />
+    <Resource Include="img\prev_icon.png" />
+    <Resource Include="img\search_icon.png" />
+  </ItemGroup>
+
+</Project>
