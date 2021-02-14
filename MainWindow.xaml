@@ -138,7 +138,7 @@
                              ToolTip="Search song" x:Name="SearchField"
                              TextInput="SearchField_TextInput">Search</TextBox>
                 </DockPanel>
-                <StackPanel>
+                <Grid>
                     <DataGrid x:Name="songsGrid" GridLinesVisibility="None" 
                               SelectionUnit="FullRow" SelectionMode="Single"
                               CanUserAddRows="False" CanUserDeleteRows="False"
@@ -148,14 +148,17 @@
                               AlternatingRowBackground="#FFF7F7F7" 
                               CellStyle="{StaticResource MusicListRowStyle}"
                               ColumnHeaderStyle="{StaticResource MusicListHeaderStyle}"
-                              BorderThickness="0" RowHeaderWidth="0">
+                              BorderThickness="0" RowHeaderWidth="0"
+                              HorizontalScrollBarVisibility="Hidden" 
+                              ScrollViewer.CanContentScroll="True"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=OneWay}" Width="*" />
                             <DataGridTextColumn Header="Author" Binding="{Binding Path=Author, Mode=OneWay}" Width="*" />
                             <DataGridTextColumn Header="Duration" Binding="{Binding Path=Duration, Mode=OneWay}" Width="0.4*" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </StackPanel>
+                </Grid>
             </DockPanel>
         </Grid>
         <Border BorderThickness="0 0.5 0 0" BorderBrush="Gray" Grid.Row="1">
