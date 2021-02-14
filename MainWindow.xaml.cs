@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using AngelMP3.mv;
+using AngelMP3.VM;
 
 namespace AngelMP3
 {
@@ -22,7 +22,6 @@ namespace AngelMP3
         public MainWindow()
         {
             InitializeComponent();
-            this.Resources.Add("songList", ModelView.Songs);
             playButton.AddHandler(Button.MouseEnterEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
             playButton.AddHandler(Button.MouseLeaveEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
         }

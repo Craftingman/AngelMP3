@@ -4,10 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AngelMP3"
-        xmlns:mv="clr-namespace:AngelMP3.mv"
+        xmlns:vm="clr-namespace:AngelMP3.VM"
         mc:Ignorable="d"
         Title="AngelMP3" Height="500" Width="800"
         MinWidth="450" MinHeight="400">
+    <Window.DataContext>
+        <vm:ViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <Style x:Key="MusicListRowStyle" TargetType="DataGridCell">
             <Style.Triggers>
@@ -140,16 +143,16 @@
                               SelectionUnit="FullRow" SelectionMode="Single"
                               CanUserAddRows="False" CanUserDeleteRows="False"
                               CanUserResizeRows="False" IsReadOnly="True" 
-                              ItemsSource="{DynamicResource songList}"
+                              ItemsSource="{Binding TrackList, Mode=OneWay}"
                               AutoGenerateColumns="False" RowBackground="Gainsboro"
                               AlternatingRowBackground="#FFF7F7F7" 
                               CellStyle="{StaticResource MusicListRowStyle}"
                               ColumnHeaderStyle="{StaticResource MusicListHeaderStyle}"
                               BorderThickness="0" RowHeaderWidth="0">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="*" />
-                            <DataGridTextColumn Header="Author" Binding="{Binding Path=Author}" Width="*" />
-                            <DataGridTextColumn Header="Duration" Binding="{Binding Path=Duration}" Width="0.4*" />
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=OneWay}" Width="*" />
+                            <DataGridTextColumn Header="Author" Binding="{Binding Path=Author, Mode=OneWay}" Width="*" />
+                            <DataGridTextColumn Header="Duration" Binding="{Binding Path=Duration, Mode=OneWay}" Width="0.4*" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

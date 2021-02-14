@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="img\clock_icon.png" />
     <Resource Include="img\default_song_icon.png" />
     <Resource Include="img\next_icon.png" />
