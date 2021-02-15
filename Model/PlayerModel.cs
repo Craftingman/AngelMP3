@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text;
-using System.Windows.Media;
 using System.IO;
 using TagLib;
 
 namespace AngelMP3.Model
 {
     class PlayerModel
-    {
-        private readonly MediaPlayer mediaPlayer = new MediaPlayer();
-        private readonly FsController fsController = new FsController(@"D:\Music");
+    { 
+        private readonly FsController fsController = new FsController(@"D:\music");
         private readonly ObservableCollection<Song> _trackList = new ObservableCollection<Song>();
         public readonly ReadOnlyObservableCollection<Song> TrackList;
         public PlayerModel() {
@@ -35,8 +33,15 @@ namespace AngelMP3.Model
         }
         public FsController(string path)
         {
-            CurrentDir = new DirectoryInfo(path);
-            SongFiles = new List<FileInfo>(CurrentDir.GetFiles("*.mp3", SearchOption.AllDirectories));
+            try
+            {
+                CurrentDir = new DirectoryInfo(path);
+                SongFiles = new List<FileInfo>(CurrentDir.GetFiles("*.mp3", SearchOption.AllDirectories));
+            } catch
+            {
+                SongFiles = new List<FileInfo>();
+            }
+            
         }
         public void UpdatePath() { 
         
@@ -51,25 +56,48 @@ namespace AngelMP3.Model
                     tfile.Tag.Title : sf.Name;
                 string author = tfile.Tag.FirstPerformer != null ? 
                     tfile.Tag.FirstPerformer : "Unknown";
-                TimeSpan duration = tfile.Properties.Duration;
+                CustomTimeSpan duration = new CustomTimeSpan(tfile.Properties.Duration);
                 songList.Add(new Song(title, author, duration, fullPath));
             }
             return songList;
+        }
+        public bool ValidateSongPath(string path) {
+            return (new FileInfo(path)).Exists;
+        }
+    }
+    public class CustomTimeSpan {
+        public TimeSpan Value { get; set; }
+        public CustomTimeSpan(TimeSpan ts) {
+            Value = ts;
+        }
+        public override string ToString()
+        {
+            int resMinutes = Value.Minutes;
+            int numSec = Convert.ToInt32(Value.Seconds);
+            string resSeconds = numSec > 9 ? numSec.ToString() : $"0{numSec}";
+            if (Value.Hours >= 1) { 
+                resMinutes = Value.Minutes + Value.Hours*60;
+            }
+            return $"{resMinutes}:{resSeconds}";
         }
     }
     public class Song
     {
         public string Name { get; }
         public string Author { get; }
-        public TimeSpan Duration { get; }
+        public CustomTimeSpan Duration { get; }
         public string Path { get; }
 
-        public Song(string name, string author, TimeSpan duration, string path)
+        public Song(string name, string author, CustomTimeSpan duration, string path)
         {
             Name = name;
             Author = author;
             Duration = duration;
             Path = path;
+        }
+        public override string ToString()
+        {
+            return $"{Name} : {Author} : {Duration} : {Path}";
         }
     }
 }

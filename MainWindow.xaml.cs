@@ -13,7 +13,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Globalization;
+using System.ComponentModel;
 using AngelMP3.VM;
+using AngelMP3.Model;
+
 
 namespace AngelMP3
 {
@@ -22,13 +26,18 @@ namespace AngelMP3
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel VM = new ViewModel();
+            this.DataContext = VM;
             playButton.AddHandler(Button.MouseEnterEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
             playButton.AddHandler(Button.MouseLeaveEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
+            
+            Predicate<object> TrackListFilter = new Predicate<object>(item => ((Song)item).Name.Contains(searchField.Text));
+                                                                     //|| ((Song)item).Author.Contains(searchField.Text));
+            songsGrid.ItemsSource = VM.TrackListView;
         }
-
         private void SearchField_TextInput(object sender, TextCompositionEventArgs e)
         {
-
+            
         }
         private void PlayButton_MouseEnterOrLeave(object sender, MouseEventArgs e) {
             Button playBtn = (Button)e.Source;
@@ -40,6 +49,18 @@ namespace AngelMP3
             } else if (imgName == "pause_icon.png") {
                 bgImg.Source = new BitmapImage(new Uri("img/play_icon.png", UriKind.RelativeOrAbsolute));
             }
+        }
+    }
+    public class SongAuthorNameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null) return $"{((Song)value).Name} : {((Song)value).Author}";
+            return "Song : Author";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
 }
