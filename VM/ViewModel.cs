@@ -8,32 +8,59 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Data;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
 using AngelMP3.Model;
 
 namespace AngelMP3.VM
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        readonly PlayerModel _playerModel = new PlayerModel();
+        private readonly PlayerModel _playerModel = new PlayerModel();
+        private readonly MediaController _mediaController = new MediaController();
+        public MediaController MediaControl {
+            get
+            {
+                return _mediaController;
+            }
+        }
         public ReadOnlyObservableCollection<Song> TrackList { get; set; }
-        public ICollectionView TrackListView { get; set; }
-        public event PropertyChangedEventHandler PropertyChanged;
-
+        private List<Song> filteredTrackList;
+        public List<Song> FilteredTrackList { 
+            get { return filteredTrackList; } 
+            set
+            {
+                filteredTrackList = value;
+                OnPropertyChanged("FilteredTrackList");
+            }
+        }
+        public void UpdateFilteredTrackList()
+        {
+            List<Song> templist = new List<Song>();
+            foreach (Song song in TrackList)
+            {
+                if (SongFilter(song))
+                {
+                    templist.Add(song);
+                }
+            }
+            FilteredTrackList = templist;
+        }
         public ViewModel()
         {
             TrackList = _playerModel.TrackList;
-            TrackListView = CollectionViewSource.GetDefaultView(TrackList);
-            TrackListView.Filter = SongFilter;
+            UpdateFilteredTrackList();
         }
         private string _filterString = "";
         public string FilterString
         {
             get { return _filterString; }
             set
-            {
+             {
                 _filterString = value;
                 OnPropertyChanged("FilterString");
-                TrackListView.Refresh();
+                UpdateFilteredTrackList();
             }
         }
         private bool SongFilter(object item)
@@ -42,8 +69,8 @@ namespace AngelMP3.VM
             return song.Name.ToLower().Contains(FilterString.ToLower()) ||
                    song.Author.ToLower().Contains(FilterString.ToLower());
         }
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public void NextSong()
+        {
         }
         
         private RelayCommand filterTrackListCommand;
@@ -58,22 +85,54 @@ namespace AngelMP3.VM
                     }));
             }
         }
+        private RelayCommand playCommand;
+        public RelayCommand PlayCommand
+        {
+            get
+            {
+                return playCommand ??
+                    (playCommand = new RelayCommand(obj => {
+                        
+                    }));
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
-    class MediaController {
+    public class MediaController : INotifyPropertyChanged
+    {
         private readonly MediaPlayer mediaPlayer;
-        private Song nowPlaying;
+        private Song _nowPlaying;
+        public Song NowPlaying
+        {
+            get {
+                return _nowPlaying;
+            }
+            set {
+                if (_nowPlaying != value)
+                {
+                    _nowPlaying = value;
+                    OnPropertyChanged("NowPlaying");
+                }
+            }
+        }
+        public event EventHandler SongEnded;
 
         public MediaController() {
             mediaPlayer = new MediaPlayer();
+            mediaPlayer.MediaEnded += (Object s, EventArgs e) => SongEnded?.Invoke(this, e);
         }
         public bool PlaySong(Song newSong)
         {
             try
             {
-                if (nowPlaying != null)
+                if (NowPlaying != null)
                 {
-                    if (newSong.Path == nowPlaying.Path && mediaPlayer.HasAudio)
+                    if (newSong.Path == NowPlaying.Path && mediaPlayer.HasAudio)
                     {
                         mediaPlayer.Play();
                         return true;
@@ -81,7 +140,7 @@ namespace AngelMP3.VM
                 }
                 mediaPlayer.Open(new Uri(newSong.Path));
                 mediaPlayer.Play();
-                nowPlaying = newSong;
+                NowPlaying = newSong;
             } catch
             {
                 return false;
@@ -90,7 +149,7 @@ namespace AngelMP3.VM
         }
         public bool PauseSong(Song song)
         {
-            if (nowPlaying != null && mediaPlayer.HasAudio)
+            if (NowPlaying != null && mediaPlayer.HasAudio)
             {
                 mediaPlayer.Pause();
                 return true;
@@ -114,6 +173,11 @@ namespace AngelMP3.VM
         public void ChangePosition() 
         { 
         
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
     public class RelayCommand : ICommand

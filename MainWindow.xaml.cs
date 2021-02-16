@@ -30,14 +30,6 @@ namespace AngelMP3
             this.DataContext = VM;
             playButton.AddHandler(Button.MouseEnterEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
             playButton.AddHandler(Button.MouseLeaveEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
-            
-            Predicate<object> TrackListFilter = new Predicate<object>(item => ((Song)item).Name.Contains(searchField.Text));
-                                                                     //|| ((Song)item).Author.Contains(searchField.Text));
-            songsGrid.ItemsSource = VM.TrackListView;
-        }
-        private void SearchField_TextInput(object sender, TextCompositionEventArgs e)
-        {
-            
         }
         private void PlayButton_MouseEnterOrLeave(object sender, MouseEventArgs e) {
             Button playBtn = (Button)e.Source;
@@ -49,6 +41,30 @@ namespace AngelMP3
             } else if (imgName == "pause_icon.png") {
                 bgImg.Source = new BitmapImage(new Uri("img/play_icon.png", UriKind.RelativeOrAbsolute));
             }
+        }
+    }
+    public class SongAuthorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null) return $"{((Song)value).Author}";
+            return "Author";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+    public class SongNameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null) return $"{((Song)value).Name}";
+            return "Song Name";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
     public class SongAuthorNameConverter : IValueConverter

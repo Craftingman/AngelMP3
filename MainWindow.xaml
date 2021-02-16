@@ -10,6 +10,8 @@
         MinWidth="450" MinHeight="400">
     <Window.Resources>
         <local:SongAuthorNameConverter x:Key="songAuthorNameConverter" />
+        <local:SongNameConverter x:Key="songNameConverter" />
+        <local:SongAuthorConverter x:Key="songAuthorConverter" />
         <Style x:Key="MusicListRowStyle" TargetType="DataGridCell">
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
@@ -120,10 +122,12 @@
                 <Image Source="img/default_song_icon.png" Width="180" Margin="0 0 0 30"></Image>
                 <TextBlock TextAlignment="Center" FontSize="25" 
                            TextWrapping="Wrap" Name="songNameMain"
-                           Text="{Binding ElementName=songsGrid, Path=SelectedItem.Name, Mode=OneWay, TargetNullValue=Song Name}"></TextBlock>
+                           Text="{Binding Path=MediaControl.NowPlaying, TargetNullValue=Song Name,
+                           Mode=OneWay, Converter={StaticResource songNameConverter}}"></TextBlock>
                 <TextBlock TextAlignment="Center" FontSize="18" 
                            Foreground="Gray" TextWrapping="Wrap" Name="songAuthorMain"
-                           Text="{Binding ElementName=songsGrid, Path=SelectedItem.Author, Mode=OneWay, TargetNullValue=Author}"></TextBlock>
+                           Text="{Binding Path=MediaControl.NowPlaying, Mode=OneWay,
+                           TargetNullValue=Author, Converter={StaticResource songAuthorConverter}}"></TextBlock>
             </StackPanel>
             <GridSplitter Grid.Column="1" Width="5" Grid.ColumnSpan="1"
                         HorizontalAlignment="Center" VerticalAlignment="Stretch" 
@@ -136,7 +140,6 @@
                     <Image Source="img/search_icon.png" DockPanel.Dock="Left" Margin="3"/>
                     <TextBox MaxLength="250" MaxLines="1" 
                              ToolTip="Search song" x:Name="searchField"
-                             TextInput="SearchField_TextInput"
                              Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.Style>
                             <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
@@ -175,7 +178,8 @@
                               HorizontalScrollBarVisibility="Hidden" 
                               ScrollViewer.CanContentScroll="True"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
-                              SelectedIndex="0">
+                              SelectedIndex="0" SelectedItem="{Binding MediaControl.NowPlaying}"
+                              ItemsSource="{Binding FilteredTrackList, UpdateSourceTrigger=PropertyChanged}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=OneWay}" Width="*" />
                             <DataGridTextColumn Header="Author" Binding="{Binding Path=Author, Mode=OneWay}" Width="*" />
@@ -201,7 +205,8 @@
                         <Image Source="img/next_icon.png" ></Image>
                     </Button>
                     <Button Padding="3" x:Name="playButton"
-                        Template="{StaticResource musicControlBtnTemplate}">
+                            Template="{StaticResource musicControlBtnTemplate}"
+                            Command="{Binding PlayCommand}">
                         <Image Source="img/play_icon.png" ></Image>
                     </Button>
                 </DockPanel>
