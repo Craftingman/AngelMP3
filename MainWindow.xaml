@@ -178,7 +178,7 @@
                               HorizontalScrollBarVisibility="Hidden" 
                               ScrollViewer.CanContentScroll="True"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
-                              SelectedIndex="0" SelectedItem="{Binding MediaControl.NowPlaying}"
+                              SelectedItem="{Binding MediaControl.NowPlaying, UpdateSourceTrigger=PropertyChanged}"
                               ItemsSource="{Binding FilteredTrackList, UpdateSourceTrigger=PropertyChanged}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=OneWay}" Width="*" />

@@ -10,7 +10,7 @@ namespace AngelMP3.Model
 {
     class PlayerModel
     { 
-        private readonly FsController fsController = new FsController(@"D:\music\test");
+        private readonly FsController fsController = new FsController(@"D:\music");
         private readonly ObservableCollection<Song> _trackList = new ObservableCollection<Song>();
         public readonly ReadOnlyObservableCollection<Song> TrackList;
         public PlayerModel() {

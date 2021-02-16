@@ -115,8 +115,11 @@ namespace AngelMP3.VM
             set {
                 if (_nowPlaying != value)
                 {
-                    _nowPlaying = value;
-                    OnPropertyChanged("NowPlaying");
+                    if(PlaySong(value))
+                    {
+                        _nowPlaying = value;
+                        OnPropertyChanged("NowPlaying");
+                    }
                 }
             }
         }
@@ -128,7 +131,7 @@ namespace AngelMP3.VM
         }
         public bool PlaySong(Song newSong)
         {
-            try
+            if (newSong != null)
             {
                 if (NowPlaying != null)
                 {
@@ -140,12 +143,9 @@ namespace AngelMP3.VM
                 }
                 mediaPlayer.Open(new Uri(newSong.Path));
                 mediaPlayer.Play();
-                NowPlaying = newSong;
-            } catch
-            {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
         public bool PauseSong(Song song)
         {
