@@ -64,6 +64,10 @@ namespace AngelMP3.VM
         {
             TrackList = _playerModel.TrackList;
             UpdateFilteredTrackList();
+            _playerModel.TrackListUpdated += (object s, EventArgs e) => {
+                TrackList = _playerModel.TrackList;
+                UpdateFilteredTrackList();
+            };
             MediaControl.PropertyChanged += (object obj, PropertyChangedEventArgs e) =>
             {
                 if (e.PropertyName == "IsPlaying")
@@ -71,7 +75,11 @@ namespace AngelMP3.VM
                     ChangePlayButtonImg(MediaControl.IsPlaying);
                 }
             };
+            MediaControl.SongEnded += (object s, EventArgs e) => {
+                NextSong();
+            };
         }
+
         private void ChangePlayButtonImg(bool playing)
         {
             if (playing)
@@ -102,8 +110,31 @@ namespace AngelMP3.VM
         }
         public void NextSong()
         {
+            if (FilteredTrackList != null && FilteredTrackList.Count != 0)
+            {
+                int indexOfSong = FilteredTrackList.IndexOf(MediaControl.NowPlaying);
+                if (indexOfSong != -1 && indexOfSong != FilteredTrackList.Count - 1)
+                {
+                    MediaControl.NowPlaying = FilteredTrackList[indexOfSong + 1];
+                    return;
+                }
+                MediaControl.NowPlaying = FilteredTrackList[0];
+            }
         }
-        
+        public void PrevSong()
+        {
+            if (FilteredTrackList != null && FilteredTrackList.Count != 0)
+            {
+                int indexOfSong = FilteredTrackList.IndexOf(MediaControl.NowPlaying);
+                if (indexOfSong != -1 && indexOfSong != 0)
+                {
+                    MediaControl.NowPlaying = FilteredTrackList[indexOfSong - 1];
+                    return;
+                }
+                MediaControl.NowPlaying = FilteredTrackList[FilteredTrackList.Count - 1];
+            }
+        }
+
         private RelayCommand filterTrackListCommand;
         public RelayCommand FilterTrackListCommand
         {
@@ -116,6 +147,7 @@ namespace AngelMP3.VM
                     }));
             }
         }
+
         private RelayCommand playPauseCommand;
         public RelayCommand PlayPauseCommand
         {
@@ -127,6 +159,31 @@ namespace AngelMP3.VM
                     }));
             }
         }
+
+        private RelayCommand nextSongCommand;
+        public RelayCommand NextSongCommand
+        {
+            get
+            {
+                return nextSongCommand ??
+                    (nextSongCommand = new RelayCommand(obj => {
+                        NextSong();
+                    }));
+            }
+        }
+
+        private RelayCommand prevSongCommand;
+        public RelayCommand PrevSongCommand
+        {
+            get
+            {
+                return prevSongCommand ??
+                    (prevSongCommand = new RelayCommand(obj => {
+                        PrevSong();
+                    }));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

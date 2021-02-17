@@ -13,38 +13,49 @@ namespace AngelMP3.Model
         private readonly FsController fsController = new FsController(@"D:\music");
         private readonly ObservableCollection<Song> _trackList = new ObservableCollection<Song>();
         public readonly ReadOnlyObservableCollection<Song> TrackList;
+        public event EventHandler TrackListUpdated;
         public PlayerModel() {
             TrackList = new ReadOnlyObservableCollection<Song>(_trackList);
             UpdateTrackList();
+            fsController.PathUpdated += (object s, EventArgs e) => {
+                TrackListUpdated?.Invoke(this, new EventArgs());
+            };
         }
         public void UpdateTrackList() {
             _trackList.Clear();
-            foreach (Song song in fsController.GetSongs()) {
+            List<Song> templist = fsController.GetSongs();
+            foreach (Song song in templist) {
                 _trackList.Add(song);
             }
+            TrackListUpdated?.Invoke(this, new EventArgs());
         }
     }
     class FsController
     {
         public DirectoryInfo CurrentDir { get; set; }
         private List<FileInfo> SongFiles { get; set; }
-        public FsController() { 
-            
+        public event EventHandler PathUpdated;
+        public FsController() {
+            SongFiles = new List<FileInfo>();
         }
         public FsController(string path)
         {
+            UpdatePath(path);
+        }
+        public void UpdatePath(string path) {
             try
             {
                 CurrentDir = new DirectoryInfo(path);
                 SongFiles = new List<FileInfo>(CurrentDir.GetFiles("*.mp3", SearchOption.AllDirectories));
-            } catch
+            }
+            catch
             {
                 SongFiles = new List<FileInfo>();
             }
-            
-        }
-        public void UpdatePath() { 
-        
+            finally
+            {
+                PathUpdated?.Invoke(this, new EventArgs());
+            }
         }
         public List<Song> GetSongs() {
             List<Song> songList = new List<Song>();

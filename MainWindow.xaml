@@ -109,10 +109,27 @@
     </Window.Resources>
     <Grid x:Name="layoutGrid">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="8*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Menu Grid.Row="0" VerticalAlignment="Center" Padding="1">
+            <Menu.Background>
+                <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                    <LinearGradientBrush.GradientStops>
+                        <GradientStop Color="#bfbfbf" Offset="0" />
+                        <GradientStop Color="#c9c9c9" Offset="0.5" />
+                        <GradientStop Color="#bfbfbf" Offset="1" />
+                    </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+            </Menu.Background>
+            <MenuItem Header="File">
+                <MenuItem Header="Open folder" ></MenuItem>
+                <MenuItem Header="Exit" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help"></MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="200" Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -140,7 +157,8 @@
                     <Image Source="img/search_icon.png" DockPanel.Dock="Left" Margin="3"/>
                     <TextBox MaxLength="250" MaxLines="1" 
                              ToolTip="Search song" x:Name="searchField"
-                             Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}">
+                             Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"
+                             BorderThickness="0" Margin="3">
                         <TextBox.Style>
                             <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                 <Style.Resources>
@@ -189,7 +207,7 @@
                 </Grid>
             </DockPanel>
         </Grid>
-        <Border BorderThickness="0 0.5 0 0" BorderBrush="Gray" Grid.Row="1">
+        <Border BorderThickness="0 0.5 0 0" BorderBrush="Gray" Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="200" Width="*"></ColumnDefinition>
@@ -197,11 +215,13 @@
                 </Grid.ColumnDefinitions>
                 <DockPanel LastChildFill="True" Grid.Column="0">
                     <Button DockPanel.Dock="Left" Padding="4"
-                        Template="{StaticResource musicControlBtnTemplate}">
+                            Template="{StaticResource musicControlBtnTemplate}"
+                            Command="{Binding PrevSongCommand}">
                         <Image Source="img/prev_icon.png"></Image>
                     </Button>
                     <Button DockPanel.Dock="Right" Padding="4"
-                        Template="{StaticResource musicControlBtnTemplate}">
+                            Template="{StaticResource musicControlBtnTemplate}"
+                            Command="{Binding NextSongCommand}">
                         <Image Source="img/next_icon.png" ></Image>
                     </Button>
                     <Button Padding="3" x:Name="playButton"
