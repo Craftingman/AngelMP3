@@ -28,9 +28,12 @@ namespace AngelMP3
             InitializeComponent();
             ViewModel VM = new ViewModel();
             this.DataContext = VM;
+            /*
             playButton.AddHandler(Button.MouseEnterEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
             playButton.AddHandler(Button.MouseLeaveEvent, new MouseEventHandler(PlayButton_MouseEnterOrLeave));
+            */
         }
+        /*
         private void PlayButton_MouseEnterOrLeave(object sender, MouseEventArgs e) {
             Button playBtn = (Button)e.Source;
             Image bgImg = (Image)playBtn.Content;
@@ -42,6 +45,7 @@ namespace AngelMP3
                 bgImg.Source = new BitmapImage(new Uri("img/play_icon.png", UriKind.RelativeOrAbsolute));
             }
         }
+        */
     }
     public class SongAuthorConverter : IValueConverter
     {

@@ -35,6 +35,53 @@ namespace AngelMP3.VM
                 OnPropertyChanged("FilteredTrackList");
             }
         }
+        private string playButtonImg = "img/play_icon.png";
+        public string PlayButtonImg
+        {
+            get
+            {
+                return playButtonImg;
+            }
+            set
+            {
+                playButtonImg = value;
+                OnPropertyChanged("PlayButtonImg");
+            }
+        }
+        private string _filterString = "";
+        public string FilterString
+        {
+            get { return _filterString; }
+            set
+            {
+                _filterString = value;
+                OnPropertyChanged("FilterString");
+                UpdateFilteredTrackList();
+            }
+        }
+
+        public ViewModel()
+        {
+            TrackList = _playerModel.TrackList;
+            UpdateFilteredTrackList();
+            MediaControl.PropertyChanged += (object obj, PropertyChangedEventArgs e) =>
+            {
+                if (e.PropertyName == "IsPlaying")
+                {
+                    ChangePlayButtonImg(MediaControl.IsPlaying);
+                }
+            };
+        }
+        private void ChangePlayButtonImg(bool playing)
+        {
+            if (playing)
+            {
+                PlayButtonImg = "img/pause_icon.png";
+                return;
+            }
+            PlayButtonImg = "img/play_icon.png";
+        }
+
         public void UpdateFilteredTrackList()
         {
             List<Song> templist = new List<Song>();
@@ -46,22 +93,6 @@ namespace AngelMP3.VM
                 }
             }
             FilteredTrackList = templist;
-        }
-        public ViewModel()
-        {
-            TrackList = _playerModel.TrackList;
-            UpdateFilteredTrackList();
-        }
-        private string _filterString = "";
-        public string FilterString
-        {
-            get { return _filterString; }
-            set
-             {
-                _filterString = value;
-                OnPropertyChanged("FilterString");
-                UpdateFilteredTrackList();
-            }
         }
         private bool SongFilter(object item)
         {
@@ -85,14 +116,14 @@ namespace AngelMP3.VM
                     }));
             }
         }
-        private RelayCommand playCommand;
-        public RelayCommand PlayCommand
+        private RelayCommand playPauseCommand;
+        public RelayCommand PlayPauseCommand
         {
             get
             {
-                return playCommand ??
-                    (playCommand = new RelayCommand(obj => {
-                        
+                return playPauseCommand ??
+                    (playPauseCommand = new RelayCommand(obj => {
+                        MediaControl.PausePlaySong();
                     }));
             }
         }
@@ -123,11 +154,35 @@ namespace AngelMP3.VM
                 }
             }
         }
+        private bool isPlaying = false;
+        public bool IsPlaying
+        {
+            get
+            {
+                return isPlaying;
+            }
+            private set
+            {
+                if (isPlaying != value)
+                {
+                    isPlaying = value;
+                    OnPropertyChanged("IsPlaying");
+                }
+            }
+        }
         public event EventHandler SongEnded;
 
         public MediaController() {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.MediaEnded += (Object s, EventArgs e) => SongEnded?.Invoke(this, e);
+        }
+        public bool PausePlaySong()
+        {
+            if (IsPlaying)
+            {
+                return PauseSong();
+            }
+            return PlaySong(NowPlaying);
         }
         public bool PlaySong(Song newSong)
         {
@@ -138,20 +193,23 @@ namespace AngelMP3.VM
                     if (newSong.Path == NowPlaying.Path && mediaPlayer.HasAudio)
                     {
                         mediaPlayer.Play();
+                        IsPlaying = true;
                         return true;
                     }
                 }
                 mediaPlayer.Open(new Uri(newSong.Path));
                 mediaPlayer.Play();
+                IsPlaying = true;
                 return true;
             }
             return false;
         }
-        public bool PauseSong(Song song)
+        public bool PauseSong()
         {
             if (NowPlaying != null && mediaPlayer.HasAudio)
             {
                 mediaPlayer.Pause();
+                IsPlaying = false;
                 return true;
             }
             return false;

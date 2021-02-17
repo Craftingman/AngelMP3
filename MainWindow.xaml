@@ -206,8 +206,8 @@
                     </Button>
                     <Button Padding="3" x:Name="playButton"
                             Template="{StaticResource musicControlBtnTemplate}"
-                            Command="{Binding PlayCommand}">
-                        <Image Source="img/play_icon.png" ></Image>
+                            Command="{Binding PlayPauseCommand}">
+                        <Image Source="{Binding PlayButtonImg, UpdateSourceTrigger=PropertyChanged}"></Image>
                     </Button>
                 </DockPanel>
                 <DockPanel LastChildFill="True" Grid.Column="1">
