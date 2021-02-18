@@ -9,6 +9,7 @@
         Title="AngelMP3" Height="500" Width="800"
         MinWidth="450" MinHeight="400">
     <Window.Resources>
+        <local:SongDurationConverter x:Key="songDurationConverter" />
         <local:SongAuthorNameConverter x:Key="songAuthorNameConverter" />
         <local:SongNameConverter x:Key="songNameConverter" />
         <local:SongAuthorConverter x:Key="songAuthorConverter" />
@@ -234,7 +235,9 @@
                     <TextBlock DockPanel.Dock="Left" TextAlignment="Center" 
                            VerticalAlignment="Center" Padding="5">00:00</TextBlock>
                     <TextBlock DockPanel.Dock="Right" TextAlignment="Center" 
-                           VerticalAlignment="Center" Padding="5">00:00</TextBlock>
+                               VerticalAlignment="Center" Padding="5"
+                               Text="{Binding Path=MediaControl.NowPlaying,
+                               TargetNullValue=00:00, Mode=OneWay, Converter={StaticResource songDurationConverter}}"></TextBlock>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -242,9 +245,10 @@
                         </Grid.RowDefinitions>
                         <TextBlock TextAlignment="Center" Grid.Row="0"
                                    VerticalAlignment="Center"
-                                   Text="{Binding ElementName=songsGrid, Path=SelectedItem, Mode=OneWay, TargetNullValue=Song : Author, Converter={StaticResource songAuthorNameConverter}}"></TextBlock>
-                        <Slider Value="0" Minimum="0" Maximum="1000" SelectionStart="0"
-                                Grid.Row="1" TickFrequency="1">
+                                   Text="{Binding Path=MediaControl.NowPlaying, Mode=OneWay, TargetNullValue=Song : Author, Converter={StaticResource songAuthorNameConverter}}"></TextBlock>
+                        <Slider Value="{Binding Path=MediaControl.SongPosition.TotalSeconds, UpdateSourceTrigger=PropertyChanged, TargetNullValue=0, Mode=OneWay}"
+                                Minimum="0" Maximum="{Binding Path=MediaControl.NowPlaying.Duration.Value.TotalSeconds, UpdateSourceTrigger=PropertyChanged, TargetNullValue=1, Mode=OneWay}" SelectionStart="0"
+                                Grid.Row="1">
                         </Slider>
                     </Grid>
                 </DockPanel>

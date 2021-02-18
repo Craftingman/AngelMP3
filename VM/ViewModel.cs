@@ -9,8 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Data;
 using System.Threading;
-using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Controls;
+using System.Timers;
 using AngelMP3.Model;
 
 namespace AngelMP3.VM
@@ -203,7 +204,7 @@ namespace AngelMP3.VM
             set {
                 if (_nowPlaying != value)
                 {
-                    if(PlaySong(value))
+                    if (PlaySong(value))
                     {
                         _nowPlaying = value;
                         OnPropertyChanged("NowPlaying");
@@ -226,12 +227,36 @@ namespace AngelMP3.VM
                     OnPropertyChanged("IsPlaying");
                 }
             }
-        }
+        } 
         public event EventHandler SongEnded;
+        private TimeSpan songPosition;
+        public TimeSpan SongPosition
+        {
+            get
+            {
+                return songPosition;
+            }
+            set
+            {
+                songPosition = value;
+                OnPropertyChanged("SongPosition");
+            }
+        }
+        private System.Timers.Timer updatePosTimer = new System.Timers.Timer(250);
 
         public MediaController() {
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.MediaEnded += (Object s, EventArgs e) => SongEnded?.Invoke(this, e);
+            mediaPlayer.MediaEnded += (object s, EventArgs e) => SongEnded?.Invoke(this, e);
+            updatePosTimer.Elapsed += (object s, ElapsedEventArgs e) => App.Current.Dispatcher.Invoke(new Action(() => HandleUpdatePosTimer()));
+        }
+        private void HandleUpdatePosTimer()
+        {
+            
+            if (Convert.ToInt32(mediaPlayer.Position.TotalSeconds) != Convert.ToInt32(SongPosition.TotalSeconds))
+            {
+                SongPosition = mediaPlayer.Position;
+            }
+            
         }
         public bool PausePlaySong()
         {
@@ -251,12 +276,14 @@ namespace AngelMP3.VM
                     {
                         mediaPlayer.Play();
                         IsPlaying = true;
+                        updatePosTimer.Start();
                         return true;
                     }
                 }
                 mediaPlayer.Open(new Uri(newSong.Path));
                 mediaPlayer.Play();
                 IsPlaying = true;
+                updatePosTimer.Start();
                 return true;
             }
             return false;
@@ -267,6 +294,7 @@ namespace AngelMP3.VM
             {
                 mediaPlayer.Pause();
                 IsPlaying = false;
+                updatePosTimer.Stop();
                 return true;
             }
             return false;

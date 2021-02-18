@@ -47,6 +47,18 @@ namespace AngelMP3
         }
         */
     }
+    public class SongDurationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null) return $"{((Song)value).Duration.ToString()}";
+            return "00:00";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
     public class SongAuthorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
